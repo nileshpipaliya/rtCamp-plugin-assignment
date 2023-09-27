@@ -14,11 +14,11 @@
  *
  * @wordpress-plugin
  * Plugin Name:       WP Book
- * Plugin URI:        https://asd
+ * Plugin URI:        #
  * Description:       rtCamp Assignment Plugin
  * Version:           1.0.0
  * Author:            Nilesh Pipaliya
- * Author URI:        https://https://profiles.wordpress.org/nileshpipaliya/
+ * Author URI:        https://https://profiles.wordpress.org/nileshpipaliya
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       wp-book
