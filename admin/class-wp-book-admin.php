@@ -208,4 +208,118 @@ class Wp_Book_Admin {
 		register_taxonomy( 'book_tag', 'book', $args );
 
 	}
+
+	/**
+	 * Create meta box for the post type "book".
+	 * 
+	 * @since 1.0.0
+	 */
+	function adding_book_meta_boxes( $post_type ) {
+		add_meta_box( 
+			'book-meta-box',
+			__( 'Book Information', 'wp-book'),
+			array( $this, 'render_meta_box' ),
+			'book',
+			'side',
+			'high'
+		);
+	}
+	
+	/**
+	 * Render Meta Box content.
+	 * 
+	 * @param WP_Post $post The post object.
+	 * 
+	 */
+
+	 function render_meta_box( $post ) {
+
+		// Add an nonce field so we can check for it later.
+		wp_nonce_field( 'book_inner_custom_box', 'book_inner_custom_box_nonce' );
+
+		// Use get_post_meta to retrieve an existing value from the database.
+		$author = get_post_meta( $post->ID, '_book_author_name', true );
+		$price = get_post_meta( $post->ID, '_book_price', true );
+		$publisher = get_post_meta( $post->ID, '_book_publisher', true );
+		$edition = get_post_meta( $post->ID, '_book_edition', true );
+		?>
+		<div class="book-inner-meta-box-content">
+			<label for="book_author">
+				<?php _e( 'Author', 'wp-book' ); ?>
+			</label>
+			<br/>
+			<input type="text" id="book_author" name="_book_author_name" value="<?php echo esc_attr( $author ); ?>" />
+			<br/>
+			<label for="book_price">
+				<?php _e( 'Price', 'wp-book' ); ?>
+			</label>
+			<br/>
+			<input type="number" id="book_price" name="_book_price" minlength="1" value="<?php echo esc_attr( $price ); ?>" />
+			<br/>
+			<label for="book_publisher">
+				<?php _e( 'Publisher', 'wp-book' ); ?>
+			</label>
+			<br/>
+			<input type="text" id="book_publisher" name="_book_publisher" value="<?php echo esc_attr( $publisher ); ?>" />
+			<br/>
+			<label for="book_edition">
+				<?php _e( 'Edition', 'wp-book' ); ?>
+			</label>
+			<br/>
+			<input type="number" id="book_edition" name="_book_edition" minlength="1" value="<?php echo esc_attr( $edition ); ?>" />
+			<br/>
+		</div>
+		
+		<?php
+	}
+
+	/**
+     * Save the meta when the post is saved.
+     *
+     * @param int $post_id The ID of the post being saved.
+     */
+	function save_book_meta_boxes( $post_id ) {
+
+		// Check if our nonce is set.
+		if ( ! isset( $_POST['book_inner_custom_box_nonce'] ) ) {
+            return $post_id;
+        }
+
+		$nonce = $_POST['book_inner_custom_box_nonce'];
+
+		// Verify that the nonce is valid.
+		if ( ! wp_verify_nonce( $nonce, 'book_inner_custom_box' ) ) {
+            return $post_id;
+        }
+
+		/*
+         * If this is an autosave, our form has not been submitted,
+         * so we don't want to do anything.
+         */
+        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+            return $post_id;
+        }
+
+		// Check the user's permissions.
+		if ( 'book' == $_POST['post_type'] ) {
+			if ( ! current_user_can( 'edit_page', $post_id ) ) {
+				return $post_id;
+			}
+		} else {
+			if ( ! current_user_can( 'edit_post', $post_id ) ) {
+				return $post_id;
+			}
+		}
+
+		// Sanitize the user input.
+		$author = sanitize_text_field( wp_unslash( $_POST['_book_author_name']  ) );
+		$price = sanitize_text_field( wp_unslash( $_POST['_book_price']) );
+		$publisher = sanitize_text_field( wp_unslash( $_POST['_book_publisher'] ) );
+		$edition = sanitize_text_field( wp_unslash( $_POST['_book_edition'] ) );
+
+		update_post_meta( $post_id, '_book_author_name', $author );
+		update_post_meta( $post_id, '_book_price', $price );
+		update_post_meta( $post_id, '_book_publisher', $publisher );
+		update_post_meta( $post_id, '_book_edition', $edition );
+	}	
 }

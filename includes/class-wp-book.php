@@ -158,6 +158,8 @@ class Wp_Book {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		$this->loader->add_action( 'init', $plugin_admin, 'codex_book_init' );
 		$this->loader->add_action( 'init', $plugin_admin, 'codex_book_taxonomies', 0 );
+		$this->loader->add_action( 'add_meta_boxes_book', $plugin_admin, 'adding_book_meta_boxes' );
+		$this->loader->add_action( 'save_post', $plugin_admin, 'save_book_meta_boxes' );
 		
 	}
 
